@@ -7,37 +7,46 @@ from tkinter import ttk
 
 post_frame_list = []
 labels_list = []
+divided_frame = None
+divided_frame_left = None
+divided_frame_right = None
 
 
 def open_link(link):
     webbrowser.open(link)
 
 
-def no_result_found():
-    label_no_result = ttk.Label(frame, text="No Results Found".upper())
+def no_result_found_right():
+    label_no_result = ttk.Label(divided_frame_right, text="No Results Found".upper())
     label_no_result.pack(expand=True, pady=5)
     labels_list.append(label_no_result)
 
 
+def no_result_found_left():
+    label_no_result = ttk.Label(divided_frame_left, text="No Results Found".upper())
+    label_no_result.pack(expand=True, pady=5, side="left")
+    labels_list.append(label_no_result)
+
+
 def simply_hire_post(job_post):
-    frame_post = ttk.Frame(frame, padding="5 5 5 5")
+    frame_post = ttk.Frame(divided_frame_right, padding="5 5 5 5")
     frame_post['borderwidth'] = 1
     frame_post['relief'] = 'solid'
     post_frame_list.append(frame_post)
 
     job_title_label = ttk.Label(frame_post, text=f"Job Title : {job_post[0]}".upper())
-    job_title_label.pack(expand=True, pady=5)
+    job_title_label.pack(expand=True, pady=9)
 
     job_location_label = ttk.Label(frame_post, text=f"Location : {job_post[2]}".upper())
-    job_location_label.pack(expand=True, pady=5)
+    job_location_label.pack(expand=True, pady=8)
 
     company_name_label = ttk.Label(frame_post, text=f"Company Name : {job_post[1]}".upper())
-    company_name_label.pack(expand=True, pady=5)
+    company_name_label.pack(expand=True, pady=8)
 
     view_details_button = ttk.Button(frame_post, width=60, text="View Full Details",
                                      command=partial(open_link, job_post[3]))
-    view_details_button.pack(expand=True, pady=5)
-    frame_post.pack(expand=True, pady=5)
+    view_details_button.pack(expand=True, pady=9)
+    frame_post.pack(expand=True, pady=8)
 
 
 def simply_hired(job_type, job_location):
@@ -92,11 +101,11 @@ def simply_hired(job_type, job_location):
         simply_hire_post(simply_hire_post_data)
 
     if post_count == 1:
-        no_result_found()
+        no_result_found_right()
 
 
 def indeed_post(job_post):
-    frame_post = ttk.Frame(frame, padding="5 5 5 5")
+    frame_post = ttk.Frame(divided_frame_left, padding="5 5 5 5")
     frame_post['borderwidth'] = 1
     frame_post['relief'] = 'solid'
     post_frame_list.append(frame_post)
@@ -185,7 +194,7 @@ def indeed_scraper(job_type, job_location):
         indeed_post(job_post)
 
     if get_jobs == 1:
-        no_result_found()
+        no_result_found_left()
 
 
 def clear_screen():
@@ -202,11 +211,21 @@ def clear_screen():
 
 
 def form_submit(*args):
+    global divided_frame
+    global divided_frame_left
+    global divided_frame_right
     clear_screen()
-    indeed_label = ttk.Label(frame, text="Here are some job post from INDEED".upper())
+    divided_frame = ttk.Frame(frame, padding="5 5 5 5")
+    divided_frame.pack()
+    divided_frame_left = ttk.Frame(divided_frame, padding="5 5 5 5")
+    divided_frame_right = ttk.Frame(divided_frame, padding="5 5 5 5")
+    divided_frame_left.pack(side="left")
+    divided_frame_right.pack(side="right")
+    post_frame_list.append(divided_frame)
+    indeed_label = ttk.Label(divided_frame_left, text="Here are some job post from INDEED".upper())
     indeed_label.pack(expand=True, pady=5)
     indeed_scraper(user_job_title_input.get(), user_job_location_input.get())
-    simply_hired_label = ttk.Label(frame, text="Here are some job post from Simply Hired".upper())
+    simply_hired_label = ttk.Label(divided_frame_right, text="Here are some job post from Simply Hired".upper())
     simply_hired_label.pack(expand=True, pady=5)
     labels_list.append(indeed_label)
     labels_list.append(simply_hired_label)
@@ -215,13 +234,15 @@ def form_submit(*args):
 
 root = Tk()
 
+root.attributes("-fullscreen", True)
+
 root.title("Job Search")
 
-size_x = 800
-size_y = 600
-spawn_x = 100
-spawn_y = 100
-root.wm_geometry(f"{size_x}x{size_y}+{spawn_x}+{spawn_y}")
+# size_x = 2000
+# size_y = 2000
+# spawn_x = 0
+# spawn_y = 0
+# root.wm_geometry(f"{size_x}x{size_y}+{spawn_x}+{spawn_y}")
 
 
 frame = ttk.Frame(root, padding="20 20 20 20")
